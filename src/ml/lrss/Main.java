@@ -1,7 +1,5 @@
 package ml.lrss;
 
-import com.sun.xml.internal.ws.util.StringUtils;
-
 import java.util.Scanner;
 
 public class Main {
@@ -18,7 +16,14 @@ public class Main {
     }
 
     private static void calc() {
-        System.out.println("Enter a letter prefix and an 8bit value:\nB(inary), H(exadecimal), U(nsigned) or bit value (signed)");
+        System.out.println(
+                "Enter a letter prefix and an value:\n" +
+                "Prefixes:\n" +
+                        "\tB(inary), \n" +
+                        "\tH(exadecimal), \n" +
+                        "\tU(nsigned) or \n" +
+                        "\tbit-count (for signed values (ex: 8 -128)"
+        );
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
         input = input.toLowerCase();
@@ -60,32 +65,44 @@ public class Main {
                 USigned = (Signed < 0 ? Signed + (int) Math.pow(2, BitSize) : Signed);
                 break;
         }
-        System.out.println("The entered value requires " + BitSize + " bits");
+        System.out.print("The entered value requires at least " + BitSize + " bits");
+        int missing = BitSize % 4;
+        if (missing != 0)
+            System.out.println(" (" + (BitSize + 4 - missing) + " bits for the Hexadecimal)");
+        else
+            System.out.println();
+
 
         String binaryStringValue = SignedToBinary(BitSize, Signed);
 
-        String binaryWithSpaces = "";
-        for (int i = 0; i < binaryStringValue.length(); i += 4) {//Todo:Should work with binaries not divisible by 4.
-            binaryWithSpaces += " " + binaryStringValue.substring(i, i + 4);
+        int maxLength = binaryStringValue.length();
+        int splitPoint = maxLength - 4;
+        while (splitPoint > 0)
+        {
+            binaryStringValue =
+                            binaryStringValue.substring(0, splitPoint) +
+                            " " +
+                            binaryStringValue.substring(splitPoint, maxLength);
+            splitPoint -= 4;
+            maxLength++;//compensating for new whitespace.
         }
 
         System.out.println(
-                "Binary:" + binaryWithSpaces +
-                        ", Hexadecimal: " + USignedToHexadecimal(BitSize, USigned) +
-                        ", Unsigned: " + USigned +
-                        ", Signed: " + Signed
+                "Binary: "          + binaryStringValue +
+                ", Hexadecimal: "   + USignedToHexadecimal(BitSize, USigned) +
+                ", Unsigned: "      + USigned +
+                ", Signed: "        + Signed
         );
     }
 
+    //http://www.electronics.dit.ie/staff/tscarff/signed_numbers/signed_numbers.htm
     private static int UnSignedToSigned(int bitSize, int unSigned) {
         int maxValue = (int) Math.pow(2, bitSize);
         return unSigned > maxValue / 2 - 1 ? //is conversion necessary?
                 unSigned - maxValue : //convert to negative signed value
                 unSigned; //value is same as signed.
     }
-    //http://kias.dyndns.org/comath/11.html
-
-    private static String SignedToBinary(int bitSize, int Signed) {
+    private static String SignedToBinary(int bitSize, int Signed) {//http://kias.dyndns.org/comath/11.html
         String binaryString = Integer.toBinaryString(Signed);//converting
         if (binaryString.length() > bitSize)
             binaryString = binaryString.substring(binaryString.length() - bitSize, binaryString.length());//removing trailing 1's
@@ -96,7 +113,6 @@ public class Main {
         }
         return binaryString;
     }
-
     private static String USignedToHexadecimal(int bitSize, int USigned) {
         String hexaString = Integer.toHexString(USigned);//converting
         int bitsOfFour = (bitSize + 4 - 1) / 4;
@@ -111,4 +127,3 @@ public class Main {
         return "0x" + hexaString;
     }
 }
-//http://www.electronics.dit.ie/staff/tscarff/signed_numbers/signed_numbers.htm
