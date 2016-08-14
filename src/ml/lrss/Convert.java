@@ -39,6 +39,7 @@ class Convert {
                 break;
             case "u":
                 USigned = Integer.parseInt(parts[1]);
+                if (USigned < 0) throw new IllegalArgumentException("Unsigned value can not be less than 0");
                 BitSize = 1;
                 if (USigned > 1) {
                     BitSize = 2;
@@ -49,8 +50,23 @@ class Convert {
                 Signed = UnSignedToSigned(BitSize, USigned);
                 break;
             default:
-                BitSize = Integer.parseInt(parts[0]);
-                Signed = Integer.parseInt(parts[1]);
+                if (parts.length == 2) {
+                    BitSize = Integer.parseInt(parts[0]);
+                    Signed = Integer.parseInt(parts[1]);
+
+                    int maxValues = (int) Math.pow(2, BitSize);
+
+                    if (Signed > maxValues / 2 - 1 || Signed < maxValues / 2 * -1 ){
+                        throw new IllegalArgumentException("Bit Size is not large enough!");
+                    }
+
+                }
+                else {
+                    throw new IllegalArgumentException(
+                                    "Signed takes only two arguments, " +
+                                    "a bit size and a Signed value. "
+                    );
+                }
                 USigned = (Signed < 0 ? Signed + (int) Math.pow(2, BitSize) : Signed);
                 break;
         }
