@@ -10,8 +10,8 @@ class Convert {
                         "Prefixes:\n" +
                         "\tB(inary), \n" +
                         "\tH(exadecimal), \n" +
-                        "\tU(nsigned) or \n" +
-                        "\tbit-count (for signed values (ex: 8 -128)"
+                        "\tU(nsigned) (bit-size) or \n" +
+                        "\tbit-size (ex: 8 -128)"
         );
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
@@ -38,14 +38,24 @@ class Convert {
                 Signed = UnSignedToSigned(BitSize, USigned);
                 break;
             case "u":
-                USigned = Integer.parseInt(parts[1]);
-                if (USigned < 0) throw new IllegalArgumentException("Unsigned value can not be less than 0");
-                BitSize = 1;
-                if (USigned > 1) {
-                    BitSize = 2;
-                    while (USigned > Math.pow(2, BitSize) - 1) {
-                        BitSize *= 2;
+                if (parts.length == 2) {
+                    USigned = Integer.parseInt(parts[1]);
+                    if (USigned < 0) throw new IllegalArgumentException("Unsigned value can not be less than 0");
+                    BitSize = 1;
+                    if (USigned > 1) {
+                        BitSize = 2;
+                        while (USigned > Math.pow(2, BitSize) - 1) {
+                            BitSize *= 2;
+                        }
                     }
+                }
+                else if (parts.length == 3) {
+                    USigned = Integer.parseInt(parts[2]);
+                    if (USigned < 0) throw new IllegalArgumentException("Unsigned value can not be less than 0");
+                    BitSize = Integer.parseInt(parts[1]);
+                }
+                else {
+                    throw new IllegalArgumentException("Unsigned takes only one or two arguments.");
                 }
                 Signed = UnSignedToSigned(BitSize, USigned);
                 break;
