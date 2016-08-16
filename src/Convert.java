@@ -6,10 +6,10 @@ class Convert {
         System.out.println(
                 "Enter a letter prefix and an value:\n" +
                         "Prefixes:\n" +
-                        "\tB(inary), \n" +
-                        "\tH(exadecimal), \n" +
-                        "\tU(nsigned) (bit-size) or \n" +
-                        "\tbit-size (ex: 8 -128)"
+                        "Binary:\t\tB,\n" +
+                        "Hexadecimal:\tH,\n" +
+                        "Unsigned:\tU (bit-size)\n" +
+                        "Signed:\t\tbit-size [ex: 8 -128]"
         );
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
