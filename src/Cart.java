@@ -1,8 +1,6 @@
-package ml.lrss;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class Main {
+public class Cart {
 
     public static void main(String[] args) {
         if (args.length >= 1) {

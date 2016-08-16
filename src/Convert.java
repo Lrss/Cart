@@ -1,5 +1,3 @@
-package ml.lrss;
-
 import java.util.Scanner;
 
 class Convert {
@@ -29,7 +27,7 @@ class Convert {
                 USigned = Integer.parseInt(parts[1], 2);
                 Signed = UnSignedToSigned(BitSize, USigned);
                 break;
-            case "h":
+            case "h": //Page 36 Chapter 2 "Representing and Manipulating Information" for manual solution. 
                 if (parts[1].length() <= 2 || !parts[1].substring(0, 2).equals("0x")) //checks for hex prefix
                     parts[1] = "0x" + parts[1];
 
