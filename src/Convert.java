@@ -16,28 +16,28 @@ class Convert {
         input = input.toLowerCase();
         String[] parts = input.split(" ");
 
-        int Signed;
-        int USigned;
+        long Signed;
+        long USigned;
         int BitSize;
         switch (parts[0]) {
             case "b":
                 if (parts.length > 2) for (int i = 2; i < parts.length; i++) parts[1] += parts[i];
 
                 BitSize = parts[1].length();
-                USigned = Integer.parseInt(parts[1], 2);
-                Signed = UnSignedToSigned(BitSize, USigned);
+                USigned = Long.parseLong(parts[1], 2);
+                Signed = USignedToSigned(BitSize, USigned);
                 break;
             case "h": //Page 36 Chapter 2 "Representing and Manipulating Information" for manual solution. 
                 if (parts[1].length() <= 2 || !parts[1].substring(0, 2).equals("0x")) //checks for hex prefix
                     parts[1] = "0x" + parts[1];
 
                 BitSize = (parts[1].length() - 2) * 4;
-                USigned = Integer.decode(parts[1]);//converts hex
-                Signed = UnSignedToSigned(BitSize, USigned);
+                USigned = HexToUSigned(parts[1].substring(2,parts[1].length()));
+                Signed = USignedToSigned(BitSize, USigned);
                 break;
             case "u":
                 if (parts.length == 2) {
-                    USigned = Integer.parseInt(parts[1]);
+                    USigned = Long.parseLong(parts[1]);
                     if (USigned < 0) throw new IllegalArgumentException("Unsigned value can not be less than 0");
                     BitSize = 1;
                     if (USigned > 1) {
@@ -48,21 +48,21 @@ class Convert {
                     }
                 }
                 else if (parts.length == 3) {
-                    USigned = Integer.parseInt(parts[2]);
+                    USigned = Long.parseLong(parts[2]);
                     if (USigned < 0) throw new IllegalArgumentException("Unsigned value can not be less than 0");
                     BitSize = Integer.parseInt(parts[1]);
                 }
                 else {
                     throw new IllegalArgumentException("Unsigned takes only one or two arguments.");
                 }
-                Signed = UnSignedToSigned(BitSize, USigned);
+                Signed = USignedToSigned(BitSize, USigned);
                 break;
             default:
                 if (parts.length == 2) {
                     BitSize = Integer.parseInt(parts[0]);
-                    Signed = Integer.parseInt(parts[1]);
+                    Signed = Long.parseLong(parts[1]);
 
-                    int maxValues = (int) Math.pow(2, BitSize);
+                    long maxValues = (long) Math.pow(2, BitSize);
 
                     if (Signed > maxValues / 2 - 1 || Signed < maxValues / 2 * -1 ){
                         throw new IllegalArgumentException("Bit Size is not large enough!");
@@ -75,7 +75,7 @@ class Convert {
                                     "a bit size and a Signed value. "
                     );
                 }
-                USigned = (Signed < 0 ? Signed + (int) Math.pow(2, BitSize) : Signed);
+                USigned = (Signed < 0 ? Signed + (long) Math.pow(2, BitSize) : Signed);
                 break;
         }
         System.out.print("The entered value requires at least " + BitSize + " bits");
@@ -108,15 +108,27 @@ class Convert {
         );
     }
 
+    private static long HexToUSigned(String s) {
+        String digits = "0123456789ABCDEF";
+        s = s.toUpperCase();
+        long val = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int d = digits.indexOf(c);
+            val = 16*val + d;
+        }
+        return val;
+    }
+
     //http://www.electronics.dit.ie/staff/tscarff/signed_numbers/signed_numbers.htm
-    private static int UnSignedToSigned(int bitSize, int unSigned) {
-        int maxValue = (int) Math.pow(2, bitSize);
+    private static long USignedToSigned(int bitSize, long unSigned) {
+        long maxValue = (long) Math.pow(2, bitSize);
         return unSigned > maxValue / 2 - 1 ? //is conversion necessary?
                 unSigned - maxValue : //convert to negative signed value
                 unSigned; //value is same as signed.
     }
-    private static String SignedToBinary(int bitSize, int Signed) {//http://kias.dyndns.org/comath/11.html
-        String binaryString = Integer.toBinaryString(Signed);//converting
+    private static String SignedToBinary(int bitSize, long Signed) {//http://kias.dyndns.org/comath/11.html
+        String binaryString = Long.toBinaryString(Signed);//converting
         if (binaryString.length() > bitSize)
             binaryString = binaryString.substring(binaryString.length() - bitSize, binaryString.length());//removing trailing 1's
         else if (binaryString.length() < bitSize) {
@@ -126,8 +138,8 @@ class Convert {
         }
         return binaryString;
     }
-    private static String USignedToHexadecimal(int bitSize, int USigned) {
-        String hexaString = Integer.toHexString(USigned);//converting
+    private static String USignedToHexadecimal(int bitSize, long USigned) {
+        String hexaString = Long.toHexString(USigned);//converting
         int bitsOfFour = (bitSize + 4 - 1) / 4;
 
         if (hexaString.length() > bitsOfFour) {
