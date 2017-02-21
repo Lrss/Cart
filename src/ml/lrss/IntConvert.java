@@ -2,13 +2,22 @@ package ml.lrss;
 
 class IntConvert {
 
-    static void CliConvert() {
+    static void CliConvert(String[] parts) {
         long Signed;
         long USigned;
         int BitSize;
         switch (parts[0]) {
             case "b":
-                if (parts.length > 2) for (int i = 2; i < parts.length; i++) parts[1] += parts[i];
+                //Removing whitespace
+                if (parts.length > 2)
+                    for (int i = 2; i < parts.length; i++)
+                        parts[1] += parts[i];
+
+                //Validating binary value
+                for (char bit: parts[1].toCharArray()) {
+                    if (bit != '0' && bit != '1')
+                        throw new IllegalArgumentException("a binary value can only consist of '0' and 1.");
+                }
 
                 BitSize = parts[1].length();
                 USigned = Long.parseLong(parts[1], 2);
@@ -25,7 +34,8 @@ class IntConvert {
             case "u":
                 if (parts.length == 2) {
                     USigned = Long.parseLong(parts[1]);
-                    if (USigned < 0) throw new IllegalArgumentException("Unsigned value can not be less than 0");
+                    if (USigned < 0)
+                        throw new IllegalArgumentException("Unsigned value can not be less than 0");
                     BitSize = 1;
                     if (USigned > 1) {
                         BitSize = 2;
@@ -36,7 +46,8 @@ class IntConvert {
                 }
                 else if (parts.length == 3) {
                     USigned = Long.parseLong(parts[2]);
-                    if (USigned < 0) throw new IllegalArgumentException("Unsigned value can not be less than 0");
+                    if (USigned < 0)
+                        throw new IllegalArgumentException("Unsigned value can not be less than 0");
                     BitSize = Integer.parseInt(parts[1]);
                 }
                 else {
@@ -58,19 +69,28 @@ class IntConvert {
                 }
                 else {
                     throw new IllegalArgumentException(
-                            "Signed takes only two arguments, " +
-                                    "a bit size and a Signed value. "
+                            "Signed takes only two arguments, a bit size and a Signed value. "
                     );
                 }
                 USigned = (Signed < 0 ? Signed + (long) Math.pow(2, BitSize) : Signed);
                 break;
         }
-        System.out.print("The entered value requires at least " + BitSize + " bits");
+        System.out.print("The entered value requires at least " + BitSize + " bit" + (BitSize > 1 ? "s":""));
+
+        long maxVal = (long) Math.pow(2, BitSize) - 1;
+        int overflows = 0;
+        while (USigned > maxVal) {
+            USigned -= maxVal;
+            overflows++;
+        }
+        if (overflows > 0)
+            System.out.print(" (The Unsigned value overflowed " + overflows + " time" + (overflows > 1 ? "s":"") + ")");
+
         int missing = BitSize % 4;
         if (missing != 0)
-            System.out.println(" (" + (BitSize + 4 - missing) + " bits for the Hexadecimal)");
-        else
-            System.out.println();
+            System.out.print(" (" + (BitSize + 4 - missing) + " bits for the Hexadecimal)");
+
+        System.out.println(".");
 
 
         String binaryStringValue = SignedToBinary(BitSize, Signed);
@@ -88,7 +108,7 @@ class IntConvert {
         }
 
         System.out.println(
-                "Binary: "          + binaryStringValue +
+                        "Binary: "          + binaryStringValue +
                         ", Hexadecimal: "   + USignedToHexadecimal(BitSize, USigned) +
                         ", Unsigned: "      + USigned +
                         ", Signed: "        + Signed
@@ -108,11 +128,11 @@ class IntConvert {
     }
 
     //http://www.electronics.dit.ie/staff/tscarff/signed_numbers/signed_numbers.htm
-    private static long USignedToSigned(int bitSize, long unSigned) {
+    private static long USignedToSigned(int bitSize, long uSigned) {
         long maxValue = (long) Math.pow(2, bitSize);
-        return unSigned > maxValue / 2 - 1 ? //is conversion necessary?
-                unSigned - maxValue : //convert to negative signed value
-                unSigned; //value is same as signed.
+        return uSigned > maxValue / 2 - 1 ? //is conversion necessary?
+                uSigned - maxValue : //convert to negative signed value
+                uSigned; //value is same as signed.
     }
     private static String SignedToBinary(int bitSize, long Signed) {//http://kias.dyndns.org/comath/11.html
         String binaryString = Long.toBinaryString(Signed);//converting
