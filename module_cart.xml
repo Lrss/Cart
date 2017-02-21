@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_cart" default="compile.module.cart">
+  <dirname property="module.cart.basedir" file="${ant.file.module_cart}"/>
+  
+  <property name="module.jdk.home.cart" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.cart" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.cart" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.cart" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="cart.output.dir" value="${module.cart.basedir}/out/production/Cart"/>
+  <property name="cart.testoutput.dir" value="${module.cart.basedir}/out/test/Cart"/>
+  
+  <path id="cart.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="cart.module.production.classpath">
+    <path refid="${module.jdk.classpath.cart}"/>
+  </path>
+  
+  <path id="cart.runtime.production.module.classpath">
+    <pathelement location="${cart.output.dir}"/>
+  </path>
+  
+  <path id="cart.module.classpath">
+    <path refid="${module.jdk.classpath.cart}"/>
+    <pathelement location="${cart.output.dir}"/>
+  </path>
+  
+  <path id="cart.runtime.module.classpath">
+    <pathelement location="${cart.testoutput.dir}"/>
+    <pathelement location="${cart.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.cart">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.cart">
+    <patternset refid="excluded.from.module.cart"/>
+  </patternset>
+  
+  <path id="cart.module.sourcepath">
+    <dirset dir="${module.cart.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.cart" depends="compile.module.cart.production,compile.module.cart.tests" description="Compile module Cart"/>
+  
+  <target name="compile.module.cart.production" depends="register.custom.compilers" description="Compile module Cart; production classes">
+    <mkdir dir="${cart.output.dir}"/>
+    <javac2 destdir="${cart.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.cart}/javac">
+      <compilerarg line="${compiler.args.cart}"/>
+      <bootclasspath refid="cart.module.bootclasspath"/>
+      <classpath refid="cart.module.production.classpath"/>
+      <src refid="cart.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.cart"/>
+    </javac2>
+    
+    <copy todir="${cart.output.dir}">
+      <fileset dir="${module.cart.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.cart.tests" depends="register.custom.compilers,compile.module.cart.production" description="compile module Cart; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.cart" description="cleanup module">
+    <delete dir="${cart.output.dir}"/>
+    <delete dir="${cart.testoutput.dir}"/>
+  </target>
+</project>

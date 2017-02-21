@@ -1,21 +1,8 @@
-import java.util.Scanner;
+package ml.lrss;
 
-class Convert {
+class IntConvert {
 
     static void CliConvert() {
-        System.out.println(
-                "Enter a letter prefix and an value:\n" +
-                        "Prefixes:\n" +
-                        "Binary:\t\tB,\n" +
-                        "Hexadecimal:\tH,\n" +
-                        "Unsigned:\tU (bit-size)\n" +
-                        "Signed:\t\tbit-size [ex: 8 -128]"
-        );
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        input = input.toLowerCase();
-        String[] parts = input.split(" ");
-
         long Signed;
         long USigned;
         int BitSize;
@@ -71,7 +58,7 @@ class Convert {
                 }
                 else {
                     throw new IllegalArgumentException(
-                                    "Signed takes only two arguments, " +
+                            "Signed takes only two arguments, " +
                                     "a bit size and a Signed value. "
                     );
                 }
